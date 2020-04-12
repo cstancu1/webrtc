@@ -3,17 +3,12 @@ let remoteUser
 
 var config = {
     iceServers: [{
-        urls: [ "stun:eu-turn2.xirsys.com" ]
+        urls: [ "stun:numb.viagenie.ca" ]
      }, {
-        username: "1y5PnM-Kq4oVeAZlEoHqkImEcnRv7vkyKkKYuvypotu94OmARzwXwEIX0EmUAeC1AAAAAF6Qa-hjc3RhbmN1MQ==",
-        credential: "0cc95cc8-7b2a-11ea-a926-4a049da423ff",
+        username: "claudiustancu@outlook.com",
+        credential: "Parola123",
         urls: [
-            "turn:ss-turn1.xirsys.com:80?transport=udp",
-            "turn:ss-turn1.xirsys.com:3478?transport=udp",
-            "turn:ss-turn1.xirsys.com:80?transport=tcp",
-            "turn:ss-turn1.xirsys.com:3478?transport=tcp",
-            "turns:ss-turn1.xirsys.com:443?transport=tcp",
-            "turns:ss-turn1.xirsys.com:5349?transport=tcp"
+            "turn:numb.viagenie.ca"
         ]
      }],
 
@@ -34,8 +29,11 @@ var pc = new RTCPeerConnection(config)
 
   //DETECT IF ANY DATA CHANNELS
   pc.ontrack = function(event) {
-      console.log(event)
+    document.getElementById('startvideobutton').style.display="none"
+    document.getElementById('callUserMain').style.display="none"
+    console.log(event)
     document.getElementById("videoStream").srcObject = event.streams[0];
+    document.getElementById('videoStream').play()
   };
 
 pc.ondatachannel =function (e) {
@@ -43,7 +41,10 @@ pc.ondatachannel =function (e) {
     console.log(e)
 
     e.channel.onopen = function(){
+        document.getElementById('callUserMain').style.display="none;"
         console.log('<=== REAL TIME COMMUNICATION STARTED ===>')
+        startVideoStream()
+        document.getElementById('myCamera').style.display="block"
     }
     e.channel.onmessage = function(msg){
         document.getElementById('receivedMessage').innerHTML = msg.data
@@ -56,6 +57,7 @@ socket.on('signal',async  data => {
     try {
         if(data.data.type=='offer'){
            offerReceived(data.data)
+           document.getElementById('invitestatus').innerHTML = " INVITATIE ACCEPTATA"
            
         }else if(data.data.type=='answer'){
             await pc.setRemoteDescription(data.data)

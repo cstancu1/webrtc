@@ -1,7 +1,10 @@
-const app = require('express')();
+const express = require('express')
+const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 connectedUsers = []
+
+app.use(express.static(__dirname + '/'));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/index.html");
@@ -27,7 +30,6 @@ io.on('connection', (socket) => {
 
     socket.on('call', destination => {
         var destinationId = getUserId(destination)
-        console.log(destinationId)
         var callerName = getUserName(socket.id)
         data = {
             callerName : callerName
@@ -44,7 +46,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('candidate', data => {
-            console.log(data)
             var destinationId = getUserId(data.destination)
             io.to(destinationId).emit('candidate', data)
     })
