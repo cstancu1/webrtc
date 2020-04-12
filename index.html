@@ -68,8 +68,10 @@
       Data feed<span id="userId"></span>
     </div>
     <div class="card-body">
+            <a style="margin-top:30px;" onClick="startVideoStream()" class="btn btn-primary" >VideoStream</a>
+
       <span id="receivedMessage"></span>      
-      
+      <video controls width="600" id="videoStream"></video>
     </div>
   </div>
 </div>
@@ -90,6 +92,16 @@
     remoteUser = userToCall
     socket.emit('call', userToCall)
   }
+
+async function startVideoStream(){
+  stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+  stream.getTracks().forEach(function(track) {
+    pc.addTrack(track, stream);
+    pc.dispatchEvent(new Event('negotiationneeded'))
+    console.log('dispatched')
+  });
+
+}
 
 async function acceptCall(){
     $('#someonecall').modal('toggle')

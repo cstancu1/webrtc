@@ -23,19 +23,7 @@ var config = {
 
 var pc = new RTCPeerConnection(config)
 
-navigator.mediaDevices.getUserMedia({video:true, audio:true}, function(stream){
-    pc.addStream(stream)
-})
-
-// let the "negotiationneeded" event trigger offer generation
-// pc.onnegotiationneeded = async () => {
-//     try {
-//       await pc.setLocalDescription(await pc.createOffer());
-//       socket.emit('signal', {destination:remoteUser, data:pc.localDescription})
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
+//let the "negotiationneeded" event trigger offer generation
 
   //CREATING DATA CHANNEL
   const dataChannel = pc.createDataChannel('channel')
@@ -45,6 +33,11 @@ navigator.mediaDevices.getUserMedia({video:true, audio:true}, function(stream){
   }
 
   //DETECT IF ANY DATA CHANNELS
+  pc.ontrack = function(event) {
+      console.log(event)
+    document.getElementById("videoStream").srcObject = event.streams[0];
+  };
+
 pc.ondatachannel =function (e) {
     console.log('Received data channel')
     console.log(e)
@@ -73,6 +66,16 @@ socket.on('signal',async  data => {
                 }
                 socket.emit('candidate', toSend)
             }
+
+            pc.onnegotiationneeded = async () => {
+                try {
+                  await pc.setLocalDescription(await pc.createOffer());
+                  socket.emit('signal', {destination:remoteUser, data:pc.localDescription})
+                } catch (err) {
+                  console.error(err);
+                }
+              };
+            
         }
     }
     finally{
@@ -108,6 +111,16 @@ async function offerReceived(offer){
         data: pc.localDescription,
         destination: document.getElementById('calluser').value
     }
+
+    pc.onnegotiationneeded = async () => {
+        try {
+          await pc.setLocalDescription(await pc.createOffer());
+          socket.emit('signal', {destination:remoteUser, data:pc.localDescription})
+        } catch (err) {
+          console.error(err);
+        }
+      };
+    
     socket.emit('signal', data)
     console.log('Answer sent')
 
