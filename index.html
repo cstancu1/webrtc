@@ -120,8 +120,10 @@ async function startVideoStream(){
 }
 
 async function startPreview(stream){
-  document.getElementById('myCamera').srcObject = stream;
-  await document.getElementById('myCamera').play();
+  if(!document.getElementById('myCamera').srcObject){
+    document.getElementById('myCamera').srcObject = stream;
+    await document.getElementById('myCamera').play();
+  }
 }
 
 async function acceptCall(){

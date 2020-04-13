@@ -31,8 +31,10 @@ var pc = new RTCPeerConnection(config)
   pc.ontrack = function(event) {
     document.getElementById('callUserMain').style.display="none"
     console.log(event)
-    document.getElementById("videoStream").srcObject = event.streams[0];
-    document.getElementById('videoStream').play()
+    if(!document.getElementById("videoStream").srcObject){
+        document.getElementById("videoStream").srcObject = event.streams[0];
+        document.getElementById('videoStream').play()
+    } 
   };
 
 pc.ondatachannel =function (e) {
