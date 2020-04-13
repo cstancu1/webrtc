@@ -29,7 +29,6 @@ var pc = new RTCPeerConnection(config)
 
   //DETECT IF ANY DATA CHANNELS
   pc.ontrack = function(event) {
-    document.getElementById('startvideobutton').style.display="none"
     document.getElementById('callUserMain').style.display="none"
     console.log(event)
     document.getElementById("videoStream").srcObject = event.streams[0];

@@ -112,18 +112,17 @@ async function startVideoStream(){
   stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
   stream.getTracks().forEach(function(track) {
     pc.addTrack(track, stream);
-    startPreview()
-    pc.dispatchEvent(new Event('negotiationneeded'))
+    startPreview(stream)
     console.log('dispatched')
   });
+    document.getElementById('myCamera').style.display = "block";
 
+    pc.dispatchEvent(new Event('negotiationneeded'))
 }
 
-async function startPreview(){
-  stream = await navigator.mediaDevices.getUserMedia({video:true, auto:false})
+async function startPreview(stream){
   document.getElementById('myCamera').srcObject = stream;
   await document.getElementById('myCamera').play();
-  document.getElementById('myCamera').style.display = "block";
 }
 
 async function acceptCall(){
