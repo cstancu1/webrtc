@@ -45,6 +45,7 @@ pc.ondatachannel =function (e) {
         document.getElementById('callUserMain').style.display="none;"
         console.log('<=== REAL TIME COMMUNICATION STARTED ===>')
         startVideoStream()
+        document.getElementById('loadingOverlay').style.display = "none"
         document.getElementById('floatingCam').style.display="block"
     }
     e.channel.onmessage = function(msg){
