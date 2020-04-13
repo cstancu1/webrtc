@@ -108,15 +108,18 @@ dragElement(elem);
   }
 
 async function startVideoStream(){
+
+  if(!document.getElementById('floatingCam').srcObject){
   stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
   stream.getTracks().forEach(function(track) {
     pc.addTrack(track, stream);
     startPreview(stream)
     console.log('dispatched')
   });
-    document.getElementById('floatingCam').style.display = "block";
-
     pc.dispatchEvent(new Event('negotiationneeded'))
+    document.getElementById('floatingCam').style.display = "block";
+  }
+    
 }
 
 async function startPreview(stream){
