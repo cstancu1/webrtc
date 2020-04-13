@@ -114,8 +114,8 @@ async function startVideoStream(){
   stream.getTracks().forEach(function(track) {
     pc.addTrack(track, stream);
     startPreview(stream)
-    console.log('dispatched')
   });
+      console.log('dispatched')
     pc.dispatchEvent(new Event('negotiationneeded'))
     document.getElementById('floatingCam').style.display = "block";
   }
@@ -124,6 +124,7 @@ async function startVideoStream(){
 
 async function startPreview(stream){
   if(!document.getElementById('myCamera').srcObject){
+    document.getElementById('myCamera').muted = true;
     document.getElementById('myCamera').srcObject = stream;
     await document.getElementById('myCamera').play();
   }
