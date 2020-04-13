@@ -112,7 +112,7 @@ dragElement(elem);
 
 async function startVideoStream(){
 
-  if(!document.getElementById('floatingCam').srcObject){
+  if(!document.getElementById('myCamera').srcObject){
   stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
   stream.getTracks().forEach(function(track) {
     pc.addTrack(track, stream);
