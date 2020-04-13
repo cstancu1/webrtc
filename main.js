@@ -43,7 +43,7 @@ pc.ondatachannel =function (e) {
         document.getElementById('callUserMain').style.display="none;"
         console.log('<=== REAL TIME COMMUNICATION STARTED ===>')
         startVideoStream()
-        document.getElementById('myCamera').style.display="block"
+        document.getElementById('floatingCam').style.display="block"
     }
     e.channel.onmessage = function(msg){
         document.getElementById('receivedMessage').innerHTML = msg.data
