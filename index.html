@@ -1,0 +1,153 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script src="main.js"></script>
+<script src="floatingCam.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+
+<div class = "row" id="mainframe">
+
+<!--INITITAL MODAL-->
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Autentificare</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control" placeholder="Nume utilizator" aria-label="Username" aria-describedby="basic-addon1" name="userInput" id="userInput">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onClick="loginUser()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--INITITAL MODAL FINNISH-->
+
+<!--SOMEONE IS CALLING MODAL-->
+  <div class="modal fade" id="someonecall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Invitatie de la <span id="callerName" style="font-weight:bold, font-size:18px;"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Apasati OK pentru a accepta.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onClick="acceptCall()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--SOMEONE IS CALLING MODAL FINNISH-->
+
+  <div class="col-md-12" id="callUserMain">
+    <div id="mainCardTitle">
+      NUME UTILIZATOR:<div id="userId"><a style="color:white" class="btn btn-info" onClick = "setusernamePopUp()">SETEAZA NUME UTILIZATOR</a></div>
+    </div>
+    <div class="" id="callcard" style="display:none">
+      <h5 class="">Invita utilizator</h5>
+      <p class="">Introduceti numele celuilalt utilizator pentru a stabili conexiunea.</p>
+      <input type="text" class="form-control" placeholder="Nume utilizator" aria-label="calluser" aria-describedby="basic-addon1" name="calluser" id="calluser">
+      <a style="margin-top:30px;" onClick="callUser()" href="#" class="btn btn-primary" >Invita</a>
+      <span id="invitestatus"></span>
+    </div>
+  </div>
+</div>
+<div class="text-center" id="videoCard">
+      <span id="receivedMessage"></span>      
+      <video  width="100%"id="videoStream"></video>
+</div>
+</div>
+
+<div id="loadingOverlay" class="loading">Incarcare&#8230;</div>
+
+<!-- Draggable DIV -->
+<div id="floatingCam">
+  <!-- Include a header DIV with the same name as the draggable DIV, followed by "header" -->
+  <div id="floatingCamheader">LIVE</div>
+  <video id="myCamera"  width="100%"></video>
+</div>
+
+
+<script>
+elem = document.getElementById("floatingCam")
+dragElement(elem);
+</script>
+
+
+<script>
+  $('#loginModal').modal({focus:true})
+
+  function loginUser(){
+    var user = document.getElementById('userInput').value
+    $('.toast').toast({animation:true, autohide:true, delay:3000})
+    socket.emit('login', user)
+    $('#loginModal').modal('toggle')
+    var x = document.getElementById('callcard');
+    x.style.display = "block";
+    document.getElementById('userId').innerHTML=' '+user
+  }
+
+  function callUser(){
+    var userToCall = document.getElementById('calluser').value
+    remoteUser = userToCall
+    document.getElementById('invitestatus').innerHTML = "  INVITATIE TRIMISA"
+    document.getElementById('loadingOverlay').style.display = "block"
+    var x = document.getElementById('calluser');
+    x.style.display = "none";
+    socket.emit('call', userToCall)
+  }
+
+async function startVideoStream(){
+
+  if(!document.getElementById('myCamera').srcObject){
+  stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+  stream.getTracks().forEach(function(track) {
+    pc.addTrack(track, stream);
+    startPreview(stream)
+  });
+      console.log('dispatched')
+    pc.dispatchEvent(new Event('negotiationneeded'))
+    document.getElementById('floatingCam').style.display = "block";
+  }
+    
+}
+
+async function startPreview(stream){
+  if(!document.getElementById('myCamera').srcObject){
+    document.getElementById('myCamera').muted = true;
+    document.getElementById('myCamera').srcObject = stream;
+    await document.getElementById('myCamera').play();
+  }
+}
+
+async function acceptCall(){
+    $('#someonecall').modal('toggle')
+    await pc.setLocalDescription(await pc.createOffer())
+    console.log('Created offer')
+    remoteUser = document.getElementById('callerName').innerHTML
+    toSend = {
+      destination: document.getElementById('callerName').innerHTML,
+      type: 'offer',
+      data: pc.localDescription
+    }
+    socket.emit('signal', toSend)
+  }
+
+function setusernamePopUp(){
+  $('#loginModal').modal({focus:true})
+}
+
+</script>
